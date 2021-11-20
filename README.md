@@ -49,6 +49,7 @@ mnemonic: 'fold tobacco uncle egg view main merge focus clog roast ostrich unloc
 ```
 
 the commands above lead to a keystore file `/accounts/test_account.json` for the account.
+see [ethereum wiki](https://github.com/ethereum/wiki/wiki/Web3-Secret-Storage-Definition) or [stackoverflow](https://ethereum.stackexchange.com/questions/37150/ethereum-wallet-v3-format) for more info regarding keystore files.
 note that the command `accounts.add()` will create a new mnemonic phrase with every call.
 
 this account can then be reused in a new brownie session as shown below.
@@ -114,3 +115,30 @@ finally, quit the console using exit.
 8,318,914.00007 ETH
 >>> exit()
 ```
+
+### connect to xdai
+
+brownie supports access to various networks out of the box.
+use the command below to check for supported networks.
+
+```bash
+brownie networks list
+```
+
+[xdai](https://www.xdaichain.com/) is a evm blockchain designed for fast and inexpensive transactions. its token xdai is linked to the us dollar where 1 xdai = 1 us dollar.
+to use brownie with xdai use.
+
+```bash
+brownie console --network xdai-main
+```
+
+inside the console 
+
+```bash
+>>> network.show_active()
+'xdai-main'
+>>> addr = web3.toChecksumAddress('0x00000000219ab540356cbb839cbe05303d7705fa')
+>>> print('{:,.5f} DAI'.format(web3.fromWei(web3.eth.getBalance(addr), "ether")))
+0.01000 ETH
+```
+
