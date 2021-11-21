@@ -7,6 +7,15 @@ docker based brownie development
 * working with [accounts](https://eth-brownie.readthedocs.io/en/stable/account-management.html)
 * working with [networks](https://eth-brownie.readthedocs.io/en/stable/network-management.html)
 * brownie [github](https://github.com/eth-brownie/brownie)
+* chainlink's [install guide](https://chain.link/bootcamp/brownie-setup-instructions)
+
+## clone the repo
+
+before you execute any of the commands shown below clone this repository.
+
+```bash
+docker build -t brownie .
+```
 
 ## build the docker image
 
@@ -23,12 +32,138 @@ docker build -t brownie .
 run docker container in interactive mode
 
 ```bash
-docker run -it --rm -v $PWD/accounts:/accounts brownie
+docker run -it --rm \
+    -v $PWD/accounts:/accounts \
+    -v $PWD/helloworld:/code/helloworld \
+    brownie
 ```
 
 inside the container you can now work with brownie.
 
 ## use brownie
+
+### work with a local ganache chain
+
+the default for brownie console is to work with a local [ganache](https://www.trufflesuite.com/ganache) chain.
+under the hood brownie is working with ganache-cli that is also installed by the docker file of this repository.
+
+to start the brownie console with ganache use the following command.
+
+```bash
+brownie console
+```
+
+the local ganache chain comes with 10 preloaded accounts that can be explored in the brownie console as shown below.
+
+```bash
+>>> len(accounts)
+10
+>>> dir(accounts[0])
+[address, balance, deploy, estimate_gas, gas_used, get_deployment_address, nonce, transfer]
+>>> print('{} {:.3f} ETH'.format(accounts[0].address, web3.fromWei(accounts[0].balance(), 'ether')))
+0x66aB6D9362d4F35596279692F0251Db635165871 100.000 ETH
+```
+
+### compile and test a simple contract
+
+a sample brownie project is provided in folder `helloworld`.
+the project contains the contract `contracts/Box.sol`, corresponding test cases
+and a deployment script.
+
+the box contract makes use of the [`Ownable.sol`](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.3.3/contracts/access/Ownable.sol) contract from the OpenZeppelin library.
+to use such external libraries they need to be installed in the brownie package manager. 
+in addition, a remapping of the package location to the "standard" `@`-notation needs to be defined in `brownie-config.yaml`.
+
+in order to compile the box contract use the command sequence shown below.
+this step will create a number of book keeping files located in folder `build`.
+
+```bash
+cd helloworld
+brownie pm install OpenZeppelin/openzeppelin-contracts@4.3.3
+brownie compile
+```
+
+after successful compilation of the box contract execute the unit tests in folder `tests` and have brownie create code coverage reports that will be located in folder `reports`.
+
+```bash
+brownie test -C
+```
+
+for the tests the box contract is actually deployed to the local ganache chain.
+the deployment step for this is implementd in the form of a test fixture in `tests/conftest.py`.
+the files `tests/test_*.py` represent the contract unit tests that use these fixtures implicitly.
+
+the code coverage results can then be viewed in the brownie gui.
+
+
+```bash
+brownie gui
+```
+
+to show the highlighted source code follow these steps
+
+1. select contract `Box` in the top right drop down box
+1. select report `coverage` in the drop down box to the left
+1. select report type `branches` or `statements`
+
+### deploy a simple contract
+
+### connect to mainnet
+
+as an example check the balance of an mainnet address with a large amount of ethers.
+
+https://etherscan.io/address/0x00000000219ab540356cbb839cbe05303d7705fa
+
+now, compare the balance using brownie console as shown below.
+to have brownie connect to mainnet use [infura](https://infura.io) and pass the infura project id via environment variable to brownie.
+
+```bash
+export WEB3_INFURA_PROJECT_ID=<your infura project id>
+brownie console --network mainnet
+```
+
+inside the brownie console verify the connection to the network
+
+```bash
+>>> network.show_active()
+'mainnet'
+```
+
+convert the address to a checksummed address (required by brownie) and check for its balance.
+finally, quit the console using exit.
+
+```bash
+>>> addr = web3.toChecksumAddress('0x00000000219ab540356cbb839cbe05303d7705fa')
+>>> print('{:,.5f} ETH'.format(web3.fromWei(web3.eth.getBalance(addr), "ether")))
+8,318,914.00007 ETH
+>>> exit()
+```
+
+### connect to xdai
+
+brownie supports access to various networks out of the box.
+use the command below to check for supported networks.
+
+```bash
+brownie networks list
+```
+
+[xdai](https://www.xdaichain.com/) is a evm blockchain designed for fast and inexpensive transactions. its token xdai is linked to the us dollar where 1 xdai = 1 us dollar.
+to use brownie with xdai use.
+
+```bash
+brownie console --network xdai-main
+```
+
+inside the console 
+
+```bash
+>>> network.show_active()
+'xdai-main'
+>>> addr = web3.toChecksumAddress('0x00000000219ab540356cbb839cbe05303d7705fa')
+>>> print('{:,.5f} DAI'.format(web3.fromWei(web3.eth.getBalance(addr), "ether")))
+0.01000 DAI
+```
 
 ### create and use local accounts
 
@@ -83,62 +218,3 @@ Brownie v1.17.1 - Python development framework for Ethereum
 Found 1 account:
  └─candy: 0x627306090abaB3A6e1400e9345bC60c78a8BEf57
 ```
-
-### connect to mainnet
-
-example: check the balance of an mainnet address with a large amount of ethers.
-check the balance on etherscan
-
-https://etherscan.io/address/0x00000000219ab540356cbb839cbe05303d7705fa
-
-now, compare the balance using brownie console as shown below.
-to have brownie connect to mainnet use [infura](https://infura.io) and pass the infura project id via environment variable to brownie.
-
-```bash
-export WEB3_INFURA_PROJECT_ID=<your infura project id>
-brownie console --network mainnet
-```
-
-inside the brownie console verify the connection to the network
-
-```bash
->>> network.show_active()
-'mainnet'
-```
-
-convert the address to a checksummed address (required by brownie) and check for its balance.
-finally, quit the console using exit.
-
-```bash
->>> addr = web3.toChecksumAddress('0x00000000219ab540356cbb839cbe05303d7705fa')
->>> print('{:,.5f} ETH'.format(web3.fromWei(web3.eth.getBalance(addr), "ether")))
-8,318,914.00007 ETH
->>> exit()
-```
-
-### connect to xdai
-
-brownie supports access to various networks out of the box.
-use the command below to check for supported networks.
-
-```bash
-brownie networks list
-```
-
-[xdai](https://www.xdaichain.com/) is a evm blockchain designed for fast and inexpensive transactions. its token xdai is linked to the us dollar where 1 xdai = 1 us dollar.
-to use brownie with xdai use.
-
-```bash
-brownie console --network xdai-main
-```
-
-inside the console 
-
-```bash
->>> network.show_active()
-'xdai-main'
->>> addr = web3.toChecksumAddress('0x00000000219ab540356cbb839cbe05303d7705fa')
->>> print('{:,.5f} DAI'.format(web3.fromWei(web3.eth.getBalance(addr), "ether")))
-0.01000 ETH
-```
-
