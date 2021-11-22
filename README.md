@@ -14,7 +14,8 @@ docker based brownie development
 before you execute any of the commands shown below clone this repository.
 
 ```bash
-docker build -t brownie .
+git clone https://github.com/matthiaszimmermann/brownie-docker.git
+cd brownie-docker
 ```
 
 ## build the docker image
@@ -34,7 +35,8 @@ run docker container in interactive mode
 ```bash
 docker run -it --rm \
     -v $PWD/accounts:/accounts \
-    -v $PWD/helloworld:/code/helloworld \
+    -v $PWD/brownie:/projects/brownie \
+    -v $PWD/helloworld:/projects/helloworld \
     brownie
 ```
 
@@ -108,11 +110,29 @@ to show the highlighted source code follow these steps
 
 ### deploy a simple contract
 
+to deploy a contract to a chain you need to have a deployment account with sufficient funding to pay for the gas costs of deployment.
+
+brownie's account handling allows to manage accounts via id that are linked to keystore files (see below for the creation of local accounts with keystores).
+
+it is highly recommended to protect keystore files with passwords and keep keystore files outside any repository.
+this prevents unitentional uploading of account credentials in any form. 
+for the example below we assume that a keystore file `/accounts/deploy_account.json`
+is available.
+
+```bash
+brownie accounts import deploy_account /accounts/deploy_account.json
+brownie accounts list
+```
+
+you can now deploy the box contract as shown below
+
+```bash
+brownie run deploy.py
+```
+
 ### connect to mainnet
 
-as an example check the balance of an mainnet address with a large amount of ethers.
-
-https://etherscan.io/address/0x00000000219ab540356cbb839cbe05303d7705fa
+as an example check the balance of a [example mainnet address](https://etherscan.io/address/0x00000000219ab540356cbb839cbe05303d7705fa) with a large amount of ethers.
 
 now, compare the balance using brownie console as shown below.
 to have brownie connect to mainnet use [infura](https://infura.io) and pass the infura project id via environment variable to brownie.
@@ -217,4 +237,15 @@ Brownie v1.17.1 - Python development framework for Ethereum
 
 Found 1 account:
  └─candy: 0x627306090abaB3A6e1400e9345bC60c78a8BEf57
+```
+
+### brownie tests
+
+to explore and verify brownie for various use cases corresponding unit tests are available in directory `brownie` of this repository.
+
+these tests can be executed from within a running brownie container as shown below.
+
+```bash
+cd brownie
+pytest
 ```

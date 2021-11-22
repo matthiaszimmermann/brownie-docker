@@ -17,6 +17,6 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 RUN pip install eth-brownie
 
-WORKDIR /code
+WORKDIR /projects
 
 ENTRYPOINT [ "bash" ]
