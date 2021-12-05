@@ -249,3 +249,45 @@ these tests can be executed from within a running brownie container as shown bel
 cd brownie
 pytest
 ```
+
+## swiss crypto stamps experiment
+
+```bash
+docker run -it --rm \
+    -v $PWD/swiss_crypto_stamps:/projects/swiss_crypto_stamps \
+    brownie
+```
+
+inside the brownie container (see brownie docs about [using infura](https://eth-brownie.readthedocs.io/en/stable/network-management.html))
+
+```bash
+cd swiss_crypto_stamps
+export WEB3_INFURA_PROJECT_ID=<YourProjectID>
+brownie run --network=polygon-main check_matterhorn
+```
+
+creates output
+
+```bash
+Brownie v1.17.1 - Python development framework for Ethereum
+
+SwissCryptoStampsProject is the active project.
+
+Running 'scripts/check_matterhorn.py::main'...
+current network: polygon-main
+proxy.totalSupply(1): 65000
+proxy.totalSupply(2): 45000
+proxy.totalSupply(3): 30000
+proxy.totalSupply(4): 18000
+proxy.totalSupply(5): 8000
+proxy.totalSupply(6): 4500
+proxy.totalSupply(7): 2500
+proxy.totalSupply(8): 1000
+proxy.totalSupply(9): 350
+proxy.totalSupply(10): 250
+proxy.totalSupply(11): 200
+proxy.totalSupply(12): 150
+proxy.totalSupply(13): 50
+sample stamp account: 0xf3e3d5412aad4172e4d1fd39e7f912a11f2f0cbd
+proxy.balanceOf(0xf3e3d5412aad4172e4d1fd39e7f912a11f2f0cbd, 1): 1
+```
