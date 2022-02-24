@@ -14,9 +14,14 @@ contract Box is Ownable {
     uint256 private _value;
 
     /**
-     *  @dev indicates that box value has changed
+     *  @dev logs box value increase with value changed
      */
-    event ValueChanged(uint256 value);
+    event LogValueIncreasedTo(uint256 value);
+
+    /**
+     *  @dev logs box value has been set to new value changed
+     */
+    event LogValueSetTo(uint256 value);
 
     /**
      *  @dev sets new box value
@@ -24,7 +29,7 @@ contract Box is Ownable {
      */
     function store(uint256 value) public onlyOwner {
         _value = value;
-        emit ValueChanged(_value);
+        emit LogValueSetTo(_value);
     }
 
     /**
@@ -33,7 +38,7 @@ contract Box is Ownable {
     function inc() public {
         if(_value < 100) {
             _value += 1;
-            emit ValueChanged(_value);
+            emit LogValueIncreasedTo(_value);
         }
     }
 
