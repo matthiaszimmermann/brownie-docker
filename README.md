@@ -124,11 +124,13 @@ brownie accounts import deploy_account /accounts/deploy_account.json
 brownie accounts list
 ```
 
-you can now deploy the box contract as shown below
+you can now deploy the box contract as shown below. 
 
 ```bash
-brownie run deploy.py
+brownie run deploy
 ```
+the `run <name>` command scans folder `scripts`, locates file `scripts/<name>.py` and executes its `main()` method
+
 
 ### connect to mainnet
 
@@ -249,6 +251,10 @@ these tests can be executed from within a running brownie container as shown bel
 cd brownie
 pytest
 ```
+
+## openzeppelin access controls example
+
+see the readme in folder `oz_access_control`
 
 ## swiss crypto stamps experiment
 

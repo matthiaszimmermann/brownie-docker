@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:3.9.10
 
 # Set up code directory
 RUN mkdir -p /usr/src/app
