@@ -1,0 +1,18 @@
+# brownie default values made explicit
+compiler:
+    evm_version: null
+    solc:
+        version: null
+        optimizer:
+            enabled: true
+            runs: 200
+    vyper:
+        version: null
+networks:
+  default: development
+
+# map constants/environment variables to .env file
+dotenv: .env
+wallets:
+  owner_mnemonic: ${OWNER_MNEMONIC}
+  owner_mnemonic_dev: ${OWNER_MNEMONIC_DEV}
