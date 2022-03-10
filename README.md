@@ -28,6 +28,61 @@ build the docker image
 docker build -t brownie .
 ```
 
+## setup of a new brownie project
+
+using offline tx as example
+```bash
+mkdir offline_tx
+cd offline_tx
+docker run -it --rm -v $PWD:/projects brownie
+```
+
+inside the brownie container
+```bash
+brownie init
+echo "# experimenting with offline tx signing" > README.md
+```
+
+in the ide write some contract eg `Ping.sol` in this case and compile the project 
+```bash
+brownie compile
+```
+
+use brownie console to deploy and interact with a Ping contract.
+
+first start the console
+```bash
+brownie console
+```
+
+then, create a contract instance and show the address of the deployed contract
+```bash
+pingContract = Ping.deploy({'from': accounts[0]})
+pingContract.address
+```
+
+and call the contracts ping method. use `tx.info()` to introspect the transaction returned by the contract call.
+to exit the brownie console use `exit()`.
+
+```bash
+tx = pingContract.ping(42, {'from': accounts[1]})
+tx.info()
+
+exit()
+```
+
+use brownie testing.
+
+in folder `tests` add file `conftest.py` to provide test fixtures that represent the application under test.
+in this case method `pingContract` provides a deployed Ping contract.
+this fixture is then used in `test_ping.py` for 3 simple test cases.
+important: test case methods names need to start with prefix `test_` and parameters representing text fixtures need to mach with method names in  `conftest.py`.
+
+with all that in place run the 3 test cases
+```bash
+brownie test
+```
+
 ## run docker container
 
 run docker container in interactive mode
