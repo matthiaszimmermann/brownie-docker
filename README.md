@@ -315,14 +315,13 @@ see the readme in folder `oz_access_control`
 
 ```bash
 docker run -it --rm \
-    -v $PWD/swiss_crypto_stamps:/projects/swiss_crypto_stamps \
+    -v $PWD/swiss_crypto_stamps:/projects \
     brownie
 ```
 
 inside the brownie container (see brownie docs about [using infura](https://eth-brownie.readthedocs.io/en/stable/network-management.html))
 
 ```bash
-cd swiss_crypto_stamps
 export WEB3_INFURA_PROJECT_ID=<YourProjectID>
 brownie run --network=polygon-main check_matterhorn
 ```
