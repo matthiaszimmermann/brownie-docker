@@ -16,6 +16,12 @@ RUN wget https://raw.githubusercontent.com/eth-brownie/brownie/master/requiremen
 RUN pip install -r requirements.txt
 RUN pip install eth-brownie
 
+# Add some aliases
+RUN echo "alias rm='rm -i'" >> /root/.bashrc
+RUN echo "alias l='ls -CF'" >> /root/.bashrc
+RUN echo "alias la='ls -A'" >> /root/.bashrc
+RUN echo "alias ll='ls -alF'" >> /root/.bashrc
+
 WORKDIR /projects
 
-ENTRYPOINT [ "bash" ]
+CMD [ "bash" ]

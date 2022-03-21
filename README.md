@@ -97,20 +97,63 @@ docker run -it --rm \
 
 inside the container you can now work with brownie.
 
+## use brownie image to start local ganache
+
+As the brownie image contains an embedded [Ganache](https://trufflesuite.com/ganache/index.html) chain we can also use this image to create Ganache container as shown below.
+
+```bash
+docker run -d -p 7545:7545 --name ganache brownie ganache-cli \
+    --mnemonic "candy maple cake sugar pudding cream honey rich smooth crumble sweet treat" \
+    --chainId 1234 \
+    --port 7545 \
+    -h "0.0.0.0"
+
+```
+
+### ganache chain setup considerations
+The chosen setup deterministically creates addresses (and private keys) via a HD wallet with the mnemonic `"candy maple cake sugar pudding cream honey rich smooth crumble sweet treat"`.
+Port `7545` is chosen to avoid conflicts with any productive local ethereum client that typically run on port 8545.
+
+## use metamask to connect to this chain
+
+To connect with Metamaks using the mnemonic as secret recovery phrase.
+As network parameter use `http://localhost:7545` as RPC URL and `1234` as Chain ID.
+
+## use brownie console to connect to this chain
+
+
+In the Brownie container add the ganache chain to the networks available to Brownie (see Brownie [Network Managment](https://eth-brownie.readthedocs.io/en/stable/network-management.html) for details about brownie networks).
+Then, start Brownie console that connects to this chain.
+
+```bash
+brownie networks add Local ganache host=http://host.docker.internal:7545 chainid=1234
+brownie console --network ganache
+```
+
+brownie recognizes the network and provides access to its accounts. 
+the commands below show that brownie is connected to the local ganache chain and lists all inital accounts and balances.
+```bash
+print('network {} is_connected {}'.format(network.show_active(), network.is_connected()))
+print('\n'.join(['{} {:.4f} ETH'.format(acc.address, Wei(acc.balance()).to('ether')) for acc in accounts]))
+```
+
+an account may also be directly created from a seed phrase
+```bash
+myAccount = accounts.from_mnemonic('candy maple cake sugar pudding cream honey rich smooth crumble sweet treat')
+```
+
 ## use brownie
 
-### work with a local ganache chain
+### work with the integrated ganache chain
 
-the default for brownie console is to work with a local [ganache](https://www.trufflesuite.com/ganache) chain.
-under the hood brownie is working with ganache-cli that is also installed by the docker file of this repository.
-
-to start the brownie console with ganache use the following command.
+the default for brownie console is to work with ganache.
+to start the brownie console with the integrated ganache chain use the following command.
 
 ```bash
 brownie console
 ```
 
-the local ganache chain comes with 10 preloaded accounts that can be explored in the brownie console as shown below.
+this setup comes with 10 preloaded accounts that can be explored in the brownie console as shown below.
 
 ```bash
 >>> len(accounts)
