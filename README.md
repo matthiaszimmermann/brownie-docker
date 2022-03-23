@@ -142,6 +142,76 @@ an account may also be directly created from a seed phrase
 myAccount = accounts.from_mnemonic('candy maple cake sugar pudding cream honey rich smooth crumble sweet treat')
 ```
 
+## use brownie with polygon, ...
+
+start brownie container.
+
+```bash
+docker run -it --rm -v $PWD:/projects brownie
+```
+
+in the container list the networks available to brownie
+```bash
+brownie networks list
+```
+
+which prints network details to the console
+```bash
+...
+
+Optimistic Ethereum
+  ├─Mainnet: optimism-main
+  └─Kovan: optimism-test
+
+Polygon
+  ├─Mainnet (Infura): polygon-main
+  └─Mumbai Testnet (Infura): polygon-test
+
+XDai
+  ├─Mainnet: xdai-main
+  └─Testnet: xdai-test
+...
+```
+
+when we'd like to work with the polygon mumbai network `Mumbai Testnet (Infura): polygon-test` we need to specify our infura project id via environment variable before we can launch the brownie console.
+
+```bash
+export WEB3_INFURA_PROJECT_ID=<your infura project id here>
+brownie console --network polygon-test
+```
+
+inside the console, we obtain an account via `accounts.add()`.
+the shown mnemonic can be used to recreate the account at a later time.
+```bash
+>>> account = accounts.add()
+mnemonic: 'depend bubble soccer depart pepper oblige royal coach menu during essence gauge'
+>>> account.address
+'0xf566aB4bb6e4ba6C4ABbeb183dbe1d5d96b9e337'
+>>> Wei(acc.account()).to('ether')
+Fixed('0E-18')
+```
+
+IMPORTANT make sure to safely store the mnemonic words for later use.
+these words represent the private key to your account.
+loosing these words is like loosing your money.
+sharing these words is like handing over your money.
+
+```bash
+accountRecreated = accounts.from_mnemonic('<mnemonic words here>')
+```
+
+this account is initially empty and we need to transfer some funds to it before it can be used.
+on test networks such as polygon-test public faucets are usually avaliable to obtain test 'money'.
+
+the table below provides links to such test faucets and block explorers for test networks.
+
+| name | brownie network id | | |
+| -- | --- | -- | -- |
+| gnosis | xdai-test | [faucet](https://faucet.poa.network/) | [explorer](https://blockscout.com/xdai/testnet)
+| polygon | polygon-test | [faucet](https://faucet.polygon.technology/) | [explorer](https://mumbai.polygonscan.com/)
+| avalanche | avax-test | [faucet](https://faucet.avax-test.network/) | [explorer](https://testnet.snowtrace.io) 
+| binance smart chain | bsc-test | [faucet](https://testnet.binance.org/faucet-smart) | [explorer](https://testnet.bscscan.com/)
+
 ## use brownie
 
 ### work with the integrated ganache chain
