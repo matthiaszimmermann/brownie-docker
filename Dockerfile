@@ -9,12 +9,20 @@ WORKDIR /usr/src/app
 RUN apt-get update && apt-get install -y libssl-dev
 RUN apt-get update && apt-get install -y npm
 
+# Install Ganache chain
 RUN npm install --global ganache-cli
 
+# Install Brownie
 RUN wget https://raw.githubusercontent.com/eth-brownie/brownie/master/requirements.txt
 
 RUN pip install -r requirements.txt
 RUN pip install eth-brownie
+
+# Install FastAPI
+RUN pip install fastapi
+RUN pip install uvicorn
+
+EXPOSE 8000
 
 # Add some aliases
 RUN echo "alias rm='rm -i'" >> /root/.bashrc
